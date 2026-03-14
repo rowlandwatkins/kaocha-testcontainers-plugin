@@ -33,7 +33,9 @@
              (filter #(a-filter-matches (get-in % [:for :filter]) (:kaocha.testable/desc testable)))
              (map (fn [{:keys [id config]}] [id (-> (tc/create config)
                                                     (when (some? (:fs config))
-                                                      (tc/bind-filesystem! (:fs config))
+                                                      (tc/bind-filesystem! (get-in config [:fs :host-path])
+                                                                           (get-in config [:fs :container-path])
+                                                                           (get-in config [:fs :mode]))
                                                     (tc/start!)))])))))
 
 (defmethod start-containers :kaocha.type/ns [testable configuration]
@@ -43,7 +45,9 @@
              (filter #(a-filter-matches (get-in % [:for :filter])  (:kaocha.testable/desc testable)))
              (map (fn [{:keys [id config]}] [id (-> (tc/create config)
                                                     (when (some? (:fs config))
-                                                      (tc/bind-filesystem! (:fs config))
+                                                      (tc/bind-filesystem! (get-in config [:fs :host-path])
+                                                                           (get-in config [:fs :container-path])
+                                                                           (get-in config [:fs :mode]))
                                                     (tc/start!)))])))))
 
 (defmethod start-containers :kaocha.type/clojure.test [testable configuration]
@@ -53,7 +57,9 @@
              (filter #(some #{(:kaocha.testable/id testable)} (get-in % [:for :tests])))
              (map (fn [{:keys [id config]}] [id (-> (tc/create config)
                                                     (when (some? (:fs config))
-                                                      (tc/bind-filesystem! (:fs config))
+                                                      (tc/bind-filesystem! (get-in config [:fs :host-path])
+                                                                           (get-in config [:fs :container-path])
+                                                                           (get-in config [:fs :mode]))
                                                     (tc/start!)))])))))
 
 (p/defplugin lambdaschmiede.kaocha-tc/plugin
