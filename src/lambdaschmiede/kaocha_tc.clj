@@ -31,21 +31,30 @@
         (->> configuration
              (filter #(= :each (get-in % [:for :type])))
              (filter #(a-filter-matches (get-in % [:for :filter]) (:kaocha.testable/desc testable)))
-             (map (fn [{:keys [id config]}] [id (tc/start! (tc/create config))])))))
+             (map (fn [{:keys [id config]}] [id (-> (tc/create config)
+                                                    (when (some? (:fs config))
+                                                      (tc/bind-filesystem! (:fs config))
+                                                    (tc/start!)))])))))
 
 (defmethod start-containers :kaocha.type/ns [testable configuration]
   (into {}
         (->> configuration
              (filter #(= :ns (get-in % [:for :type])))
              (filter #(a-filter-matches (get-in % [:for :filter])  (:kaocha.testable/desc testable)))
-             (map (fn [{:keys [id config]}] [id (tc/start! (tc/create config))])))))
+             (map (fn [{:keys [id config]}] [id (-> (tc/create config)
+                                                    (when (some? (:fs config))
+                                                      (tc/bind-filesystem! (:fs config))
+                                                    (tc/start!)))])))))
 
 (defmethod start-containers :kaocha.type/clojure.test [testable configuration]
   (into {}
         (->> configuration
              (filter #(= :all (get-in % [:for :type])))
              (filter #(some #{(:kaocha.testable/id testable)} (get-in % [:for :tests])))
-             (map (fn [{:keys [id config]}] [id (tc/start! (tc/create config))])))))
+             (map (fn [{:keys [id config]}] [id (-> (tc/create config)
+                                                    (when (some? (:fs config))
+                                                      (tc/bind-filesystem! (:fs config))
+                                                    (tc/start!)))])))))
 
 (p/defplugin lambdaschmiede.kaocha-tc/plugin
 
