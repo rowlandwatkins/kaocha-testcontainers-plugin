@@ -31,20 +31,20 @@
           (tc/bind-filesystem! container (:fs config))
          container))
 
-(defn- handle-sec-op [opts]
-       (println opts)
-       (reify java.util.function.Consumer
-                (accept [this t]
-                         (println (type t))
-                  (-> t
+(defmacro as-consumer [f]
+  `(reify java.util.function.Consumer
+     (accept [this arg#]
+       (~f arg#))))
+
+(defn- handle-sec-ops [cmd]
+                  (-> cmd
                       (.getHostConfig) 
-                      (.withSecurityOpt opts))
-                  )))
+                      (.withSecurityOpt opts)))
 
 (defn- set-sec-options [container config]
        (println (some? (:sec-opts config)))
        (if (some? (:sec-opts config))
-         (.withCreateContainerCmdModifier container (handle-sec-op (:sec-opts config)))
+         (.withCreateContainerCmdModifier container (as-consumer handle-sec-ops (:sec-opts config)))
          container))
 
 (defmethod start-containers :kaocha.type/var [testable configuration]
