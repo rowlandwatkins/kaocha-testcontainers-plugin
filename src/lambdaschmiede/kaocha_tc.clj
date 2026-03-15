@@ -32,14 +32,17 @@
          container))
 
 (defn- handle-sec-op [opts]
+       (println opts)
        (reify java.util.function.Consumer
                 (accept [this t]
+                         (println (type t))
                   (-> t
                       (.getHostConfig) 
                       (.withSecurityOpt opts))
                   )))
 
 (defn- set-sec-options [container config]
+       (println (some? (:sec-opts config)))
        (if (some? (:sec-opts config))
          (.withCreateContainerCmdModifier container (handle-sec-op (:sec-opts config))
          container)))
