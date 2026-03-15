@@ -37,12 +37,14 @@
        (~f arg#))))
 
 (defn- handle-sec-ops [cmd]
+       (println (type cmd))
                   (-> cmd
                       (.getHostConfig) 
                       (.withSecurityOpt ["seccomp=unconfined"])))
 
 (defn- set-sec-options [container config]
        (println (some? (:sec-opts config)))
+       (println (type container))
        (if (some? (:sec-opts config))
          (.withCreateContainerCmdModifier container (as-consumer handle-sec-ops))
          container))
