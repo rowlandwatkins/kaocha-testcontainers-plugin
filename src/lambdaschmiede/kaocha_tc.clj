@@ -27,8 +27,9 @@
 (defmulti start-containers (fn [testable _] (:kaocha.testable/type testable)))
 
 (defn- filesystem [container config]
-       (when (some? (:fs config))
-          (tc/bind-filesystem! (:fs config))))
+       (if (some? (:fs config))
+          (tc/bind-filesystem! (:fs config))
+         container))
 
 (defmethod start-containers :kaocha.type/var [testable configuration]
   (into {}
