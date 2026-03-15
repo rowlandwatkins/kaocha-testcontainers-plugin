@@ -44,8 +44,8 @@
 (defn- set-sec-options [container config]
        (println (some? (:sec-opts config)))
        (if (some? (:sec-opts config))
-         (.withCreateContainerCmdModifier container (handle-sec-op (:sec-opts config))
-         container)))
+         (.withCreateContainerCmdModifier container (handle-sec-op (:sec-opts config)))
+         container))
 
 (defmethod start-containers :kaocha.type/var [testable configuration]
   (into {}
