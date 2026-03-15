@@ -39,7 +39,7 @@
 (defn- handle-sec-ops [cmd]
                   (-> cmd
                       (.getHostConfig) 
-                      (.withSecurityOpt opts)))
+                      (.withSecurityOpt ["seccomp=unconfined"])))
 
 (defn- set-sec-options [container config]
        (println (some? (:sec-opts config)))
