@@ -28,7 +28,7 @@
 
 (defn- filesystem [container config]
        (if (some? (:fs config))
-          (tc/bind-filesystem! (:fs config))
+          (tc/bind-filesystem! container (:fs config))
          container))
 
 (defmethod start-containers :kaocha.type/var [testable configuration]
