@@ -63,6 +63,7 @@
              (filter #(= :ns (get-in % [:for :type])))
              (filter #(a-filter-matches (get-in % [:for :filter])  (:kaocha.testable/desc testable)))
              (map (fn [{:keys [id config]}] [id (-> (tc/create config)
+                                                    (set-sec-options config)
                                                     (filesystem config)
                                                     (tc/start!))])))))
 
@@ -72,6 +73,7 @@
              (filter #(= :all (get-in % [:for :type])))
              (filter #(some #{(:kaocha.testable/id testable)} (get-in % [:for :tests])))
              (map (fn [{:keys [id config]}] [id (-> (tc/create config)
+                                                    (set-sec-options config)
                                                     (filesystem config)
                                                     (tc/start!))])))))
 
