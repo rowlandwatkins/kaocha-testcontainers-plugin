@@ -31,12 +31,26 @@
           (tc/bind-filesystem! container (:fs config))
          container))
 
+(defn- handle-sec-op [opts]
+       (reify java.util.function.Consumer
+                (accept [this t]
+                  (-> t
+                      (.getHostConfig) 
+                      (.withSecurityOpt opts))
+                  )))
+
+(defn- set-sec-options [container config]
+       (if (some? (:sec-opts config))
+         (.withCreateContainerCmdModifier container (handle-sec-op (:sec-opts config))
+         container))
+
 (defmethod start-containers :kaocha.type/var [testable configuration]
   (into {}
         (->> configuration
              (filter #(= :each (get-in % [:for :type])))
              (filter #(a-filter-matches (get-in % [:for :filter]) (:kaocha.testable/desc testable)))
              (map (fn [{:keys [id config]}] [id (-> (tc/create config)
+                                                    (set-sec-options config)
                                                     (filesystem config)
                                                     (tc/start!))])))))
 
