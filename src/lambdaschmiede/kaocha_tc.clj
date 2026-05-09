@@ -31,7 +31,7 @@
           (tc/bind-filesystem! container (:fs config))
          container))
 
-(defn- create-container [container config]
+(defn- create-container [config]
        (if (some? (:docker-file config))
          (tc/create-from-docker-file config)
          (tc/create config)))
