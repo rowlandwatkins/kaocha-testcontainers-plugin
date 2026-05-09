@@ -31,6 +31,11 @@
           (tc/bind-filesystem! container (:fs config))
          container))
 
+(defn- create-container [container config]
+       (if (some? (:docker-file config))
+         (tc/create-from-docker-file config)
+         (tc/create config)))
+
 (defmacro as-consumer [f]
   `(reify java.util.function.Consumer
      (accept [this arg#]
@@ -55,7 +60,7 @@
         (->> configuration
              (filter #(= :each (get-in % [:for :type])))
              (filter #(a-filter-matches (get-in % [:for :filter]) (:kaocha.testable/desc testable)))
-             (map (fn [{:keys [id config]}] [id (-> (tc/create config)
+             (map (fn [{:keys [id config]}] [id (-> (create-container config)
                                                     (set-sec-options config)
                                                     (filesystem config)
                                                     (tc/start!))])))))
@@ -65,7 +70,7 @@
         (->> configuration
              (filter #(= :ns (get-in % [:for :type])))
              (filter #(a-filter-matches (get-in % [:for :filter])  (:kaocha.testable/desc testable)))
-             (map (fn [{:keys [id config]}] [id (-> (tc/create config)
+             (map (fn [{:keys [id config]}] [id (-> (create-container config)
                                                     (set-sec-options config)
                                                     (filesystem config)
                                                     (tc/start!))])))))
@@ -75,7 +80,7 @@
         (->> configuration
              (filter #(= :all (get-in % [:for :type])))
              (filter #(some #{(:kaocha.testable/id testable)} (get-in % [:for :tests])))
-             (map (fn [{:keys [id config]}] [id (-> (tc/create config)
+             (map (fn [{:keys [id config]}] [id (-> (create-container config)
                                                     (set-sec-options config)
                                                     (filesystem config)
                                                     (tc/start!))])))))
